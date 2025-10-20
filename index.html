@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS-5: Calendar Management & Appointment Booking | Buzzworks VA</title>
+    <script>
+        function showEmailTemplate(templateName) {
+            // Hide all templates
+            var templates = document.getElementsByClassName('email-template-content');
+            for (var i = 0; i < templates.length; i++) {
+                templates[i].classList.remove('active');
+            }
+            
+            // Remove active class from all buttons
+            var buttons = document.getElementsByClassName('template-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+            
+            // Show selected template
+            document.getElementById(templateName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function copyTemplate(templateId) {
+            var template = document.getElementById(templateId);
+            var text = template.innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Template copied to clipboard!');
+            });
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sage: #8b9d83;
+            --peach: #f6b5a7;
+            --mint: #c9d8c5;
+            --cream: #f8f9f6;
+            --dark: #2d3e2d;
+            --text: #3d4d3d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--sage) 0%, var(--mint) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .intro-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--peach);
+        }
+
+        .section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            color: var(--sage);
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid var(--mint);
+        }
+
+        .section h3 {
+            color: var(--dark);
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem 0;
+        }
+
+        .tool-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, var(--cream) 0%, white 100%);
+            border: 3px solid var(--mint);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-color: var(--sage);
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .booking-steps {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            min-width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--sage) 0%, var(--mint) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+            background: var(--cream);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--peach);
+        }
+
+        .step-content h4 {
+            color: var(--dark);
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .appointment-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .appointment-type {
+            background: white;
+            border: 2px solid var(--mint);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .appointment-type:hover {
+            border-color: var(--sage);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .appointment-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .appointment-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-duration {
+            color: var(--sage);
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .checklist-box {
+            background: var(--cream);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--sage);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--sage);
+            border-radius: 6px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .email-templates {
+            margin: 2rem 0;
+        }
+
+        .template-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .template-btn {
+            padding: 1rem 1.5rem;
+            background: var(--cream);
+            border: 2px solid var(--mint);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .template-btn:hover {
+            background: var(--mint);
+        }
+
+        .template-btn.active {
+            background: linear-gradient(135deg, var(--sage) 0%, var(--mint) 100%);
+            color: white;
+            border-color: var(--sage);
+        }
+
+        .email-template-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid var(--mint);
+            position: relative;
+        }
+
+        .email-template-content.active {
+            display: block;
+        }
+
+        .email-template-header {
+            background: var(--cream);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--peach);
+        }
+
+        .email-body {
+            font-family: 'Courier New', monospace;
+            background: #f8f8f8;
+            padding: 1.5rem;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            border: 1px solid #ddd;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--peach);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #f09582;
+            transform: translateY(-2px);
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, var(--mint) 0%, var(--cream) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--sage);
+        }
+
+        .tip-box strong {
+            color: var(--dark);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 3px solid #ffc107;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .best-practices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .practice-card {
+            background: white;
+            border: 2px solid var(--mint);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .practice-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .practice-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tool-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .appointment-types {
+                grid-template-columns: 1fr;
+            }
+
+            .template-buttons {
+                flex-direction: column;
+            }
+
+            .best-practices {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">BUZZWORKS VA</div>
+        <h1>MODULE AS-5</h1>
+        <div class="subtitle">Calendar Management & Appointment Booking</div>
+        <div class="meta-info">
+            <div class="meta-item">
+                <span>⏱️</span>
+                <span>Duration: 3 Hours</span>
+            </div>
+            <div class="meta-item">
+                <span>📚</span>
+                <span>Week 2 - Role-Specific Training</span>
+            </div>
+            <div class="meta-item">
+                <span>🎯</span>
+                <span>Phase 2A</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="intro-section">
+            <h2>Master the Art of Calendar Management</h2>
+            <p>Your ability to manage calendars efficiently is what transforms qualified leads into confirmed appointments that actually show up. This isn't just about booking a time slot—it's about creating a seamless experience that builds trust and sets the stage for successful meetings. In this module, you'll learn the systems, tools, and best practices that make you an indispensable calendar management expert.</p>
+        </div>
+
+        <div class="section">
+            <h2>Essential Tools: Google Calendar & Calendly</h2>
+            
+            <p>At Buzzworks VA, we primarily use two powerful scheduling tools. Understanding how to leverage both will make your life easier and your booking process more professional.</p>
+
+            <div class="tool-cards">
+                <div class="tool-card">
+                    <div class="tool-icon">📅</div>
+                    <div class="tool-name">Google Calendar</div>
+                    <p><strong>Best For:</strong> Manual booking, internal scheduling, detailed appointment management</p>
+                    <p style="margin-top: 1rem;"><strong>Key Features:</strong></p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Create and edit events instantly</li>
+                        <li>Set automated reminders</li>
+                        <li>Share calendars with team members</li>
+                        <li>Color-code appointment types</li>
+                        <li>Add detailed notes and attachments</li>
+                    </ul>
+                    <div class="tip-box" style="margin-top: 1rem;">
+                        <strong>Pro Tip:</strong> Always check for conflicts across all shared calendars before booking.
+                    </div>
+                </div>
+
+                <div class="tool-card">
+                    <div class="tool-icon">🔗</div>
+                    <div class="tool-name">Calendly</div>
+                    <p><strong>Best For:</strong> Self-scheduling, eliminating back-and-forth, automated booking confirmations</p>
+                    <p style="margin-top: 1rem;"><strong>Key Features:</strong></p>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Prospects book directly from available times</li>
+                        <li>Automatically syncs with Google Calendar</li>
+                        <li>Built-in reminder emails and SMS</li>
+                        <li>Custom booking questions</li>
+                        <li>Buffer time between appointments</li>
+                    </ul>
+                    <div class="tip-box" style="margin-top: 1rem;">
+                        <strong>Pro Tip:</strong> Send Calendly links for warm leads who are ready to book but want flexibility in choosing their time.
+                    </div>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Important: Always Double-Check</strong>
+                <p>Even when using automated tools like Calendly, always verify the agent's calendar before sending booking links. Calendly syncs, but last-minute changes might not reflect immediately.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Critical Rule: Buffer Time Between Appointments</h2>
+            
+            <p>Never book appointments back-to-back. Your agent needs breathing room to prepare, travel, take notes, and handle unexpected situations. Here's the standard buffer time protocol:</p>
+
+            <div class="best-practices">
+                <div class="practice-card">
+                    <div class="practice-icon">📞</div>
+                    <div class="practice-title">Phone Consultations</div>
+                    <p><strong>Buffer: 15 minutes</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">Quick calls need minimal buffer, but agents still need time to review notes and decompress.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">💻</div>
+                    <div class="practice-title">Zoom Meetings</div>
+                    <p><strong>Buffer: 20-30 minutes</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">Virtual meetings require setup time, tech checks, and follow-up note-taking.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">🏠</div>
+                    <div class="practice-title">In-Person Meetings</div>
+                    <p><strong>Buffer: 30-45 minutes</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">Account for travel time, parking, and running overtime on engaging conversations.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">🗝️</div>
+                    <div class="practice-title">Property Showings</div>
+                    <p><strong>Buffer: 45-60 minutes</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">Travel between properties, lockbox access, and unexpected showing extensions require substantial buffer.</p>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 Why Buffer Time Matters:</strong>
+                An over-scheduled agent is a stressed agent. They'll rush through meetings, provide lower quality service, and be late to appointments. Buffer time isn't wasted time—it's quality assurance time. Your agent will thank you for protecting their sanity and their reputation.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>The 8-Step Booking Process</h2>
+            
+            <p>Follow this exact process every single time you book an appointment. No shortcuts. This system ensures nothing falls through the cracks.</p>
+
+            <div class="booking-steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Confirm Appointment Time with Prospect</h4>
+                        <p>"Based on what we discussed, I'd like to get you on our agent's calendar. Do mornings or afternoons work better for you?"</p>
+                        <p style="margin-top: 0.5rem; font-style: italic; color: #666;">Offer 2-3 specific options: "Does Tuesday at 2 PM or Thursday at 10 AM work better?"</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Check Agent's Calendar</h4>
+                        <p>Open Google Calendar or Calendly and verify the time slot is actually available. Check for:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>Existing appointments</li>
+                            <li>Buffer time before/after other meetings</li>
+                            <li>Agent's blocked-off personal time</li>
+                            <li>Travel time if back-to-back in-person meetings</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Create Calendar Event</h4>
+                        <p>In Google Calendar, create a new event with:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>Title:</strong> "[Lead Name] - [Appointment Type]" (e.g., "John Smith - Seller Consultation")</li>
+                            <li><strong>Date & Time:</strong> Exact start and end time</li>
+                            <li><strong>Location:</strong> Zoom link, phone number, or property address</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Add Prospect's Contact Information</h4>
+                        <p>In the calendar event description, include:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>Full name</li>
+                            <li>Phone number</li>
+                            <li>Email address</li>
+                            <li>Property address (if applicable)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Include Notes from Qualification</h4>
+                        <p>Add all relevant details from your qualification call:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>Reason for buying/selling</li>
+                            <li>Timeline and urgency level</li>
+                            <li>Budget or price range</li>
+                            <li>Key preferences or concerns</li>
+                            <li>Any special circumstances</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem; font-style: italic; color: #666;">Example: "Inherited property, needs to sell within 60 days for estate settlement. Property needs minor repairs. Open to cash offer."</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h4>Set Reminders</h4>
+                        <p>Configure two automated reminders:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>24 hours before:</strong> Email reminder to prospect and agent</li>
+                            <li><strong>1 hour before:</strong> Email/SMS reminder to prospect and agent</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem; font-style: italic; color: #666;">Pro tip: Also manually call high-value appointments 24 hours before to confirm.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h4>Send Calendar Invite to Prospect</h4>
+                        <p>Add the prospect as a guest to the calendar event so they receive:</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li>Calendar invite they can add to their own calendar</li>
+                            <li>Automatic reminders</li>
+                            <li>Easy way to reschedule if needed</li>
+                        </ul>
+                        <p style="margin-top: 0.5rem;"><strong>Also send a confirmation email</strong> (see templates below) with all appointment details.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">8</div>
+                    <div class="step-content">
+                        <h4>Confirm with Agent</h4>
+                        <p>Send a quick message to your agent:</p>
+                        <p style="margin-top: 0.5rem; background: #f0f0f0; padding: 1rem; border-radius: 6px; font-style: italic;">
+                            "Hi [Agent Name], I've booked a seller consultation for you on Tuesday, Oct 22 at 2:00 PM with John Smith. He's looking to sell his inherited property within 60 days. Property needs minor repairs. All details are in the calendar event. Let me know if you need anything else!"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Appointment Types & Specifications</h2>
+            
+            <p>Different appointment types require different preparation and time allocations. Here's your complete guide:</p>
+
+            <div class="appointment-types">
+                <div class="appointment-type">
+                    <div class="appointment-icon">📞</div>
+                    <div class="appointment-name">Phone Consultation</div>
+                    <div class="appointment-duration">15-30 Minutes</div>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; line-height: 1.6;">
+                        <strong>Purpose:</strong> Initial discovery, quick questions, follow-up discussions<br>
+                        <strong>Best For:</strong> Early-stage leads, qualification calls, check-ins<br>
+                        <strong>Buffer:</strong> 15 minutes
+                    </p>
+                </div>
+
+                <div class="appointment-type">
+                    <div class="appointment-icon">💻</div>
+                    <div class="appointment-name">Zoom Meeting</div>
+                    <div class="appointment-duration">30-45 Minutes</div>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; line-height: 1.6;">
+                        <strong>Purpose:</strong> Detailed consultations, screen sharing, presentations<br>
+                        <strong>Best For:</strong> Out-of-state clients, buyer consultations, listing presentations<br>
+                        <strong>Buffer:</strong> 20-30 minutes
+                    </p>
+                </div>
+
+                <div class="appointment-type">
+                    <div class="appointment-icon">🏠</div>
+                    <div class="appointment-name">In-Person Meeting</div>
+                    <div class="appointment-duration">60 Minutes</div>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; line-height: 1.6;">
+                        <strong>Purpose:</strong> Listing appointments, buyer consultations, contract signings<br>
+                        <strong>Best For:</strong> Serious, motivated clients ready to move forward<br>
+                        <strong>Buffer:</strong> 30-45 minutes
+                    </p>
+                </div>
+
+                <div class="appointment-type">
+                    <div class="appointment-icon">🗝️</div>
+                    <div class="appointment-name">Property Showing</div>
+                    <div class="appointment-duration">Varies</div>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; line-height: 1.6;">
+                        <strong>Purpose:</strong> Tour properties, evaluate homes, view listings<br>
+                        <strong>Best For:</strong> Active buyers with pre-approval<br>
+                        <strong>Buffer:</strong> 45-60 minutes (includes travel time)
+                    </p>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <strong>🎯 Matching Appointment Type to Lead Quality:</strong>
+                Hot leads (0-30 days) should get in-person meetings or Zoom consultations. Warm leads (1-6 months) can start with phone consultations and graduate to in-person. Cold leads should stay on phone consultations until they heat up.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Calendar Management Checklist</h2>
+            
+            <p>Print this checklist or keep it bookmarked. Use it for every single appointment you book:</p>
+
+            <div class="checklist-box">
+                <h3 style="margin-bottom: 1rem;">Pre-Booking Checklist</h3>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Lead is fully qualified (BANT framework completed)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Confirmed appointment type and duration</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Checked agent's calendar for availability</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Verified buffer time before and after appointment</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Confirmed prospect's preferred contact method</div>
+                </div>
+            </div>
+
+            <div class="checklist-box">
+                <h3 style="margin-bottom: 1rem;">During Booking Checklist</h3>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Created calendar event with clear title</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Added all contact information (name, phone, email)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Included detailed qualification notes</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Added meeting location (Zoom link, phone number, or address)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Set 24-hour reminder</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Set 1-hour reminder</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Sent calendar invite to prospect</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Updated CRM with appointment details</div>
+                </div>
+            </div>
+
+            <div class="checklist-box">
+                <h3 style="margin-bottom: 1rem;">Post-Booking Checklist</h3>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Sent confirmation email to prospect</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Notified agent with appointment summary</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Added prospect to follow-up sequence</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Scheduled 24-hour confirmation call (for hot leads)</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div>Verified all reminders are set correctly</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Email Templates</h2>
+            
+            <p>Use these professionally crafted templates for all your appointment communications. Customize as needed, but maintain the structure and tone.</p>
+
+            <div class="email-templates">
+                <div class="template-buttons">
+                    <button class="template-btn active" onclick="showEmailTemplate('confirmation-template')">Confirmation Email</button>
+                    <button class="template-btn" onclick="showEmailTemplate('reminder-template')">24-Hour Reminder</button>
+                    <button class="template-btn" onclick="showEmailTemplate('1hour-template')">1-Hour Reminder</button>
+                    <button class="template-btn" onclick="showEmailTemplate('reschedule-template')">Reschedule Request</button>
+                    <button class="template-btn" onclick="showEmailTemplate('cancellation-template')">Cancellation Confirmation</button>
+                </div>
+
+                <div id="confirmation-template" class="email-template-content active">
+                    <button class="copy-btn" onclick="copyTemplate('confirmation-body')">📋 Copy Template</button>
+                    <div class="email-template-header">
+                        <strong>Subject:</strong> Your Appointment is Confirmed - [Date] at [Time]
+                    </div>
+                    <div class="email-body" id="confirmation-body">Hi [Prospect Name],
+
+Great speaking with you today! I'm excited to confirm your appointment with [Agent Name] from Buzzworks VA.
+
+📅 APPOINTMENT DETAILS:
+Date: [Day], [Month] [Date], [Year]
+Time: [Time] [Timezone]
+Duration: [Duration] minutes
+Type: [Phone Call / Zoom Meeting / In-Person Meeting]
+Location: [Phone Number / Zoom Link / Address]
+
+🎯 WHAT TO EXPECT:
+During this meeting, [Agent Name] will:
+• Discuss your [buying/selling] goals in detail
+• Answer all your questions about the process
+• Provide a customized strategy for your situation
+• [Any other relevant points based on qualification]
+
+📝 PLEASE BRING/PREPARE:
+• [List any documents or information they should have ready]
+• Any questions you'd like to discuss
+• [Any other specific preparation items]
+
+You'll receive reminder notifications 24 hours and 1 hour before your appointment.
+
+If you need to reschedule for any reason, simply reply to this email or call me at [Your Phone Number].
+
+Looking forward to helping you with your real estate goals!
+
+Best regards,
+[Your Name]
+Appointment Coordinator
+Buzzworks VA
+[Your Email]
+[Your Phone Number]</div>
+                </div>
+
+                <div id="reminder-template" class="email-template-content">
+                    <button class="copy-btn" onclick="copyTemplate('reminder-body')">📋 Copy Template</button>
+                    <div class="email-template-header">
+                        <strong>Subject:</strong> Reminder: Your Appointment Tomorrow at [Time]
+                    </div>
+                    <div class="email-body" id="reminder-body">Hi [Prospect Name],
+
+This is a friendly reminder about your upcoming appointment with [Agent Name] from Buzzworks VA.
+
+📅 APPOINTMENT DETAILS:
+Tomorrow, [Day], [Month] [Date]
+Time: [Time] [Timezone]
+Type: [Phone Call / Zoom Meeting / In-Person Meeting]
+Location: [Phone Number / Zoom Link / Address]
+
+✅ QUICK CONFIRMATION:
+We're all set and ready to meet with you! If these details still work for you, no action is needed.
+
+🔄 NEED TO RESCHEDULE?
+If something has come up, please let me know as soon as possible and we'll find a new time that works better.
+
+📞 For Phone Appointments:
+[Agent Name] will call you at [Phone Number] at the scheduled time.
+
+💻 For Zoom Meetings:
+Join the meeting here: [Zoom Link]
+Test your connection a few minutes early to ensure everything works smoothly.
+
+🏠 For In-Person Meetings:
+Address: [Full Address]
+Parking: [Parking instructions if applicable]
+
+We're looking forward to speaking with you tomorrow!
+
+Best regards,
+[Your Name]
+Appointment Coordinator
+Buzzworks VA
+[Your Email]
+[Your Phone Number]</div>
+                </div>
+
+                <div id="1hour-template" class="email-template-content">
+                    <button class="copy-btn" onclick="copyTemplate('1hour-body')">📋 Copy Template</button>
+                    <div class="email-template-header">
+                        <strong>Subject:</strong> Starting Soon: Your Appointment in 1 Hour
+                    </div>
+                    <div class="email-body" id="1hour-body">Hi [Prospect Name],
+
+Your appointment with [Agent Name] starts in 1 hour!
+
+⏰ APPOINTMENT TIME:
+Today at [Time] [Timezone]
+
+📞 For Phone Appointments:
+[Agent Name] will call you at [Phone Number]
+
+💻 For Zoom Meetings:
+Join here: [Zoom Link]
+Click the link 5 minutes early to test your connection
+
+🏠 For In-Person Meetings:
+Address: [Full Address]
+Please plan to arrive 5 minutes early
+
+Need to reach us? Call [Your Phone Number]
+
+See you soon!
+
+[Your Name]
+Buzzworks VA</div>
+                </div>
+
+                <div id="reschedule-template" class="email-template-content">
+                    <button class="copy-btn" onclick="copyTemplate('reschedule-body')">📋 Copy Template</button>
+                    <div class="email-template-header">
+                        <strong>Subject:</strong> Your Appointment Has Been Rescheduled
+                    </div>
+                    <div class="email-body" id="reschedule-body">Hi [Prospect Name],
+
+Thank you for letting us know you needed to reschedule. No problem at all—we've moved your appointment to a new time that works better for you.
+
+📅 NEW APPOINTMENT DETAILS:
+Date: [Day], [Month] [Date], [Year]
+Time: [Time] [Timezone]
+Duration: [Duration] minutes
+Type: [Phone Call / Zoom Meeting / In-Person Meeting]
+Location: [Phone Number / Zoom Link / Address]
+
+✅ YOUR NEW APPOINTMENT IS CONFIRMED
+
+You'll receive reminder notifications 24 hours and 1 hour before your appointment.
+
+[OPTIONAL: If this is a second reschedule, add:]
+I understand things come up! If you need to make any changes to this appointment, please give us as much notice as possible so we can accommodate your schedule.
+
+If you have any questions before your appointment, feel free to reach out anytime.
+
+Looking forward to meeting with you!
+
+Best regards,
+[Your Name]
+Appointment Coordinator
+Buzzworks VA
+[Your Email]
+[Your Phone Number]</div>
+                </div>
+
+                <div id="cancellation-template" class="email-template-content">
+                    <button class="copy-btn" onclick="copyTemplate('cancellation-body')">📋 Copy Template</button>
+                    <div class="email-template-header">
+                        <strong>Subject:</strong> Appointment Cancellation Confirmed
+                    </div>
+                    <div class="email-body" id="cancellation-body">Hi [Prospect Name],
+
+I've received your request and have cancelled your appointment scheduled for [Date] at [Time].
+
+Your appointment has been removed from the calendar and you won't receive any further reminders about it.
+
+📞 STILL INTERESTED?
+If your circumstances change and you'd like to reschedule, we'd be happy to find a new time that works for you. Just reply to this email or give me a call at [Your Phone Number].
+
+We're here to help whenever you're ready!
+
+[OPTIONAL: For leads who might be shopping around, add:]
+If you're exploring your options, I understand completely. Our door is always open if you'd like to speak with us in the future.
+
+Best regards,
+[Your Name]
+Appointment Coordinator
+Buzzworks VA
+[Your Email]
+[Your Phone Number]</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Setting Up Automated Reminders</h2>
+            
+            <p>Automated reminders dramatically improve show rates. Here's how to set them up properly in both Google Calendar and Calendly:</p>
+
+            <h3>Google Calendar Reminders</h3>
+            <div class="tip-box">
+                <strong>Step-by-Step Setup:</strong>
+                <ol style="margin-left: 1.5rem; margin-top: 1rem;">
+                    <li>Open the calendar event you created</li>
+                    <li>Click "Add notification" or "Add reminder"</li>
+                    <li>Set first reminder: "1 day before" via email</li>
+                    <li>Click "+ Add notification" again</li>
+                    <li>Set second reminder: "1 hour before" via email</li>
+                    <li>For high-value appointments, add a third reminder: "1 hour before" via SMS (if available)</li>
+                    <li>Save the event</li>
+                </ol>
+            </div>
+
+            <h3>Calendly Automated Reminders</h3>
+            <div class="tip-box">
+                <strong>Setting Default Reminders:</strong>
+                <ol style="margin-left: 1.5rem; margin-top: 1rem;">
+                    <li>Log into Calendly account</li>
+                    <li>Go to "Event Types" and select the appointment type</li>
+                    <li>Navigate to "Notifications and Cancellation Policy"</li>
+                    <li>Enable "Email Reminders"</li>
+                    <li>Set reminder times: 24 hours and 1 hour before</li>
+                    <li>Customize the reminder message (use templates above)</li>
+                    <li>Enable SMS reminders if available in your plan</li>
+                    <li>Save settings</li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Don't Rely on Automation Alone for Hot Leads</strong>
+                <p>For appointments with highly motivated prospects (HOT leads), make a personal confirmation call 24 hours before. This human touch increases show rates by 20-30% compared to automated reminders alone.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Rescheduling Appointments Professionally</h2>
+            
+            <p>Rescheduling is inevitable. How you handle it determines whether the prospect still shows up eventually or becomes a no-show statistic.</p>
+
+            <div class="best-practices">
+                <div class="practice-card">
+                    <div class="practice-icon">✅</div>
+                    <div class="practice-title">First Reschedule</div>
+                    <p><strong>Response: Accommodating</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">"No problem at all! I completely understand. Let me find you a new time. What day works better for you?"</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;"><em>Action: Offer 2-3 alternative times immediately</em></p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">⚠️</div>
+                    <div class="practice-title">Second Reschedule</div>
+                    <p><strong>Response: Understanding but Firm</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">"I understand things come up. I want to make sure we book a time you can definitely keep. When are you 100% certain you'll be available?"</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;"><em>Action: Get a stronger commitment; verify nothing will interfere</em></p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">🚩</div>
+                    <div class="practice-title">Third Reschedule</div>
+                    <p><strong>Response: Respectfully Direct</strong></p>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">"I sense this might not be the right time for you. That's totally fine. Would you prefer I follow up with you in [timeframe] when things settle down?"</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;"><em>Action: Put them in nurture campaign; don't chase endlessly</em></p>
+                </div>
+            </div>
+
+            <h3>Rescheduling Best Practices</h3>
+            <div class="checklist-box">
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div><strong>Respond quickly</strong> - Acknowledge reschedule requests within 1 hour</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div><strong>Be empathetic</strong> - Don't make them feel bad; life happens</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div><strong>Offer options immediately</strong> - Have 2-3 new times ready to suggest</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div><strong>Update all systems</strong> - Change calendar, CRM, and notify agent</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div><strong>Send new confirmation</strong> - Treat it like a fresh booking with new reminders</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
+                    <div><strong>Note the pattern</strong> - Track chronic reschedulers in CRM</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Handling Cancellations</h2>
+            
+            <p>Cancellations sting, but how you handle them can keep the door open for future opportunities.</p>
+
+            <h3>The Cancellation Call Script</h3>
+            <div class="tip-box">
+                <strong>When a prospect calls to cancel:</strong>
+                <p style="margin-top: 1rem;"><strong>Step 1 - Acknowledge:</strong></p>
+                <p style="margin-left: 1rem;">"I understand. Thanks for letting me know."</p>
+                
+                <p style="margin-top: 1rem;"><strong>Step 2 - Probe Gently:</strong></p>
+                <p style="margin-left: 1rem;">"Can I ask what changed? I want to make sure there's nothing we could have done differently."</p>
+                
+                <p style="margin-top: 1rem;"><strong>Step 3 - Offer Alternative:</strong></p>
+                <p style="margin-left: 1rem;"><em>If they're not ready now:</em> "Would it make sense to reconnect in [timeframe]?"</p>
+                <p style="margin-left: 1rem;"><em>If they found another agent:</em> "I understand. If things don't work out, we're here to help."</p>
+                <p style="margin-left: 1rem;"><em>If they're unsure:</em> "Would a quick 15-minute phone call help you decide? Less commitment than a full appointment."</p>
+                
+                <p style="margin-top: 1rem;"><strong>Step 4 - End Professionally:</strong></p>
+                <p style="margin-left: 1rem;">"I appreciate your time, [Name]. We're here if you need us in the future. Best of luck with everything!"</p>
+            </div>
+
+            <h3>Types of Cancellations & How to Handle Them</h3>
+            <div class="best-practices">
+                <div class="practice-card">
+                    <div class="practice-icon">📅</div>
+                    <div class="practice-title">Life Happened</div>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">"Emergency came up," "Got sick," "Family matter"</p>
+                    <p style="margin-top: 0.5rem; font-weight: 600;">Response: Immediately offer to reschedule. These are still viable leads.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">🏢</div>
+                    <div class="practice-title">Found Another Agent</div>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">"I'm going with someone else," "Family friend is an agent"</p>
+                    <p style="margin-top: 0.5rem; font-weight: 600;">Response: Gracefully exit. Add to long-term nurture list in case it doesn't work out.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">❄️</div>
+                    <div class="practice-title">Cold Feet</div>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">"Not ready yet," "Need more time to think," "Not sure anymore"</p>
+                    <p style="margin-top: 0.5rem; font-weight: 600;">Response: They were never truly qualified. Add to cold lead nurture campaign.</p>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">👻</div>
+                    <div class="practice-title">No-Show (Silent Cancel)</div>
+                    <p style="margin-top: 0.5rem; font-size: 0.95rem;">Didn't show up, no call, no explanation</p>
+                    <p style="margin-top: 0.5rem; font-weight: 600;">Response: One follow-up call: "Hi, I noticed you missed our appointment. Everything okay?" If no response, move to cold list.</p>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ When to Let Go</strong>
+                <p>Don't chase leads who:</p>
+                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Cancel 3+ times without rescheduling</li>
+                    <li>No-show twice without explanation</li>
+                    <li>Tell you they're working with another agent</li>
+                    <li>Ask you to stop contacting them</li>
+                </ul>
+                <p style="margin-top: 0.5rem;">Your time is valuable. Focus on leads who want to be helped.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Pro Tips for Calendar Excellence</h2>
+            
+            <div class="best-practices">
+                <div class="practice-card">
+                    <div class="practice-icon">🎨</div>
+                    <div class="practice-title">Color-Code Appointments</div>
+                    <p>Use Google Calendar colors to categorize:</p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li>🔴 Red: Seller consultations</li>
+                        <li>🔵 Blue: Buyer consultations</li>
+                        <li>🟢 Green: Property showings</li>
+                        <li>🟡 Yellow: Follow-up calls</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">📍</div>
+                    <div class="practice-title">Always Include Location</div>
+                    <p>Never book an appointment without clear location details:</p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li>Phone: Full number with extension</li>
+                        <li>Zoom: Working link tested before sending</li>
+                        <li>In-person: Full address with unit number</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">🔔</div>
+                    <div class="practice-title">Multiple Reminder Methods</div>
+                    <p>Don't rely on just email:</p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li>Email reminders (automated)</li>
+                        <li>SMS text reminders (automated)</li>
+                        <li>Personal phone calls (manual for hot leads)</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">📝</div>
+                    <div class="practice-title">Detailed Notes Always</div>
+                    <p>Your agent should never go into a meeting unprepared. Include:</p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li>Lead source</li>
+                        <li>Key pain points</li>
+                        <li>Budget/timeline</li>
+                        <li>Special circumstances</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">⚡</div>
+                    <div class="practice-title">Speed Matters</div>
+                    <p>Book appointments immediately when possible:</p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li>Strike while interest is hot</li>
+                        <li>Don't let them "think about it"</li>
+                        <li>Same-day or next-day whenever possible</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <div class="practice-icon">🔄</div>
+                    <div class="practice-title">Sync Everything</div>
+                    <p>Keep all systems updated simultaneously:</p>
+                    <ul style="margin-left: 1rem; margin-top: 0.5rem; font-size: 0.9rem;">
+                        <li>Google Calendar</li>
+                        <li>CRM system</li>
+                        <li>Agent notification</li>
+                        <li>Team shared calendar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" style="background: linear-gradient(135deg, var(--sage) 0%, var(--mint) 100%); color: white;">
+            <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">Calendar Management Mastery</h2>
+            
+            <p style="font-size: 1.1rem; line-height: 1.8;">Calendar management isn't just administrative work—it's the critical bridge between a qualified lead and a closed deal. Every appointment you book is an opportunity for your agent to change someone's life and earn income. When you master this skill, you become irreplaceable.</p>
+            
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-top: 1rem;">Remember: Your attention to detail, your follow-through, and your professionalism in managing these appointments directly impacts show rates, conversion rates, and ultimately, your agent's success.</p>
+            
+            <div style="text-align: center; margin-top: 2rem; padding: 2rem; background: rgba(255,255,255,0.1); border-radius: 12px;">
+                <strong style="font-size: 1.4rem; display: block; margin-bottom: 1rem;">The Calendar Management Commitment</strong>
+                <p style="font-size: 1.1rem;">Every appointment you book with care and attention is a potential deal. Treat each one like it's the most important meeting of the week—because for that prospect, it is.</p>
+            </div>
+        </div>
+
+        <div class="intro-section" style="background: linear-gradient(135deg, var(--cream) 0%, white 100%);">
+            <strong style="font-size: 1.2rem; color: var(--sage);">📝 Module Complete!</strong>
+            <p style="margin-top: 1rem;">You now have the complete calendar management system, email templates, and best practices to book appointments professionally. Use the checklists, follow the 8-step process, and watch your show rates soar!</p>
+        </div>
+    </div>
+</body>
+</html>
+                <div class="checklist-item">
+                    <div class="checkbox"></div>
